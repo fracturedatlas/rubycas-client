@@ -1,3 +1,20 @@
+# https://github.com/rubycas/rubycas-client/pull/69/files
+require 'active_record/session_store'
+ 
+ # wrapper around ActionDispatch::Session::ActiveRecordStore
+ # as ActiveRecord::SessionStore.session_class doesn't exist in rails4
+module ActiveRecord
+  module SessionStore
+    def self.session_class
+      ActionDispatch::Session::ActiveRecordStore.session_class
+    end
+     
+    def self.session_class=(klass)
+      ActionDispatch::Session::ActiveRecordStore.session_class = klass
+    end
+  end
+end
+
 module CASClient
   module Tickets
     module Storage
@@ -9,7 +26,7 @@ module CASClient
       # Proxy Granting Tickets and their IOUs are stored in the cas_pgtious table.
       #
       # This ticket store takes the following config parameters
-      # :pgtious_table_name - the name of the table 
+      # :pgtious_table_name - the name of the table
       class ActiveRecordTicketStore < AbstractTicketStore
 
         def initialize(config={})
@@ -27,6 +44,12 @@ module CASClient
           st = st.ticket if st.kind_of? ServiceTicket
           session = controller.session
           session[:service_ticket] = st
+        end
+
+        def destroy_session_with_session_id session_id, st
+          # This feels a bit hackish, but there isn't really a better way to go about it that I am aware of yet
+          session = ActiveRecord::SessionStore.session_class.find_by(session_id: session_id)
+          session.destroy if session.present?
         end
 
         def read_service_session_lookup(st)

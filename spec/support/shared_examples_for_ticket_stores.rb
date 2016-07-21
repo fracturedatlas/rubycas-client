@@ -11,10 +11,10 @@ shared_examples "a ticket store interacting with sessions" do
     end
   end
 
-  describe "#get_session_for_service_ticket" do
+  describe "#get_session_id_for_service_ticket" do
     context "the service ticket is nil" do
       it "should raise CASException" do
-        expect { subject.get_session_for_service_ticket(nil) }.to raise_exception(CASClient::CASException, /No service_ticket specified/)
+        expect { subject.get_session_id_for_service_ticket(nil) }.to raise_exception(CASClient::CASException, /No service_ticket specified/)
       end
     end
     context "the service ticket is associated with a session" do
@@ -23,15 +23,13 @@ shared_examples "a ticket store interacting with sessions" do
         session.save!
       end
       it "should return the session_id and session for the given service ticket" do
-        result_session_id, result_session = subject.get_session_for_service_ticket(service_ticket)
-        result_session_id.should == session.session_id
-        result_session.session_id.should == session.session_id
-        result_session.data.should == session.data
+        result_session_id = subject.get_session_id_for_service_ticket(service_ticket)
+        expect(result_session_id).to eq(session.session_id)
       end
     end
     context "the service ticket is not associated with a session" do
       it "should return nils if there is no session for the given service ticket" do
-        subject.get_session_for_service_ticket(service_ticket).should == [nil, nil]
+        expect(subject.get_session_id_for_service_ticket(service_ticket)).to be_nil
       end
     end
   end
@@ -50,7 +48,7 @@ shared_examples "a ticket store interacting with sessions" do
       end
       context "the session" do
         it "should be destroyed" do
-          ActiveRecord::SessionStore.session_class.find(:first, :conditions => {:session_id => session.session_id}).should be_nil
+          expect(subject.get_session_id_for_service_ticket(service_ticket)).to be_nil
         end
       end
       it "should destroy session for the given service ticket" do
@@ -121,7 +119,7 @@ shared_examples "a ticket store" do
       end
 
       it "should return the stored pgt" do
-        subject.retrieve_pgt(pgt_iou).should == pgt
+        expect(subject.retrieve_pgt(pgt_iou)).to eq(pgt)
       end
 
       it "should raise CASClient::CASException if the pgt_iou isn't in the store" do
@@ -129,7 +127,7 @@ shared_examples "a ticket store" do
       end
 
       it "should not return the stored pgt a second time" do
-        subject.retrieve_pgt(pgt_iou).should == pgt
+        expect(subject.retrieve_pgt(pgt_iou)).to eq(pgt)
         expect { subject.retrieve_pgt(pgt_iou) }.to raise_exception(CASClient::CASException, /Invalid pgt_iou/)
       end
     end

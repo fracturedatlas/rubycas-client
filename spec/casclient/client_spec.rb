@@ -10,17 +10,17 @@ describe CASClient::Client do
     let(:proxy)      { double('proxy', :new => session) }
 
     before :each do
-      Net::HTTP.stub :Proxy => proxy
+      allow(Net::HTTP).to receive_messages({:Proxy => proxy})
     end
 
     it "sets up the session with the login url host and port" do
-      proxy.should_receive(:new).with('localhost', 3443).and_return(session)
+      expect(proxy).to receive(:new).with('localhost', 3443).and_return(session)
       client.send(:https_connection, uri)
     end
     
     it "sets up the proxy with the known proxy host and port" do
       client = CASClient::Client.new(:login_url => login_url, :cas_base_url => '', :proxy_host => 'foo', :proxy_port => 1234)
-      Net::HTTP.should_receive(:Proxy).with('foo', 1234).and_return(proxy)
+      expect(Net::HTTP).to receive(:Proxy).with('foo', 1234).and_return(proxy)
       client.send(:https_connection, uri)
     end
   end
@@ -30,40 +30,40 @@ describe CASClient::Client do
     let(:connection) { double('connection', :get => response, :post => response, :request => response) }
 
     before :each do
-      client.stub(:https_connection).and_return(session)
-      session.stub(:start).and_yield(connection)
+      allow(client).to receive(:https_connection).and_return(session)
+      allow(session).to receive(:start).and_yield(connection)
     end
     
     context "cas server is up" do
       it "returns false if the server cannot be connected to" do
-        connection.stub(:get).and_raise(Errno::ECONNREFUSED)
-        client.cas_server_is_up?.should be_false
+        allow(connection).to receive(:get).and_raise(Errno::ECONNREFUSED)
+        expect(client.cas_server_is_up?).to eq(false)
       end
     
       it "returns false if the request was not a success" do
-        response.stub :kind_of? => false
-        client.cas_server_is_up?.should be_false
+        allow(response).to receive_messages({:kind_of? => false})
+        expect(client.cas_server_is_up?).to eq(false)
       end
       
       it "returns true when the server is running" do
-        response.stub :kind_of? => true
-        client.cas_server_is_up?.should be_true
+        allow(response).to receive_messages({:kind_of? => true})
+        expect(client.cas_server_is_up?).to eq(true)
       end
     end
     
     context "request login ticket" do
       it "raises an exception when the request was not a success" do
-        session.stub(:post).with("/Ticket", ";").and_return(response)
-        response.stub :kind_of? => false
-        lambda {
+        allow(session).to receive(:post).with("/Ticket", ";").and_return(response)
+        allow(response).to receive_messages({:kind_of? => false})
+        expect(lambda {
           client.request_login_ticket
-        }.should raise_error(CASClient::CASException)
+        }).to raise_error(CASClient::CASException)
       end
       
       it "returns the response body when the request is a success" do
-        session.stub(:post).with("/Ticket", ";").and_return(response)
-        response.stub :kind_of? => true
-        client.request_login_ticket.should == "HTTP BODY"
+        allow(session).to receive(:post).with("/Ticket", ";").and_return(response)
+        allow(response).to receive_messages({:kind_of? => true})
+        expect(client.request_login_ticket).to eq("HTTP BODY")
       end
     end
     
@@ -71,22 +71,22 @@ describe CASClient::Client do
       let(:validation_response) { double('validation_response') }
       
       it "should raise an exception when the request is not a success or 422" do
-        response.stub :kind_of? => false
-        lambda {
+        allow(response).to receive_messages({:kind_of? => false})
+        expect(lambda {
           client.send(:request_cas_response, uri, CASClient::ValidationResponse)
-        }.should raise_error(RuntimeError)
+        }).to raise_error(RuntimeError)
       end
       
       it "should return a ValidationResponse object when the request is a success or 422" do
-        CASClient::ValidationResponse.stub(:new).and_return(validation_response)
-        response.stub :kind_of? => true
-        client.send(:request_cas_response, uri, CASClient::ValidationResponse).should == validation_response
+        allow(CASClient::ValidationResponse).to receive(:new).and_return(validation_response)
+        allow(response).to receive_messages({:kind_of? => true})
+        expect(client.send(:request_cas_response, uri, CASClient::ValidationResponse)).to eq(validation_response)
       end
     end
     
     context "submit data to cas" do
       it "should return an HTTPResponse" do
-        client.send(:submit_data_to_cas, uri, {}).should == response
+        expect(client.send(:submit_data_to_cas, uri, {})).to eq(response)
       end
     end
   end

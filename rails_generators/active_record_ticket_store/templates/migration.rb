@@ -1,4 +1,4 @@
-class <%= class_name %> < ActiveRecord::Migration
+class <%= class_name %> < ActiveRecord::Migration[5.0]
   def self.up
     add_column :<%= session_table_name %>, :service_ticket, :string
 

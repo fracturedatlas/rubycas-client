@@ -23,12 +23,13 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency("activesupport")
+  gem.add_development_dependency("rails")
+  gem.add_development_dependency("activerecord-session_store")
   gem.add_development_dependency("rake")
-  gem.add_development_dependency("database_cleaner", "~> 0.9.1")
+  gem.add_development_dependency("database_cleaner", "~> 1.5.3")
   gem.add_development_dependency("json")
   gem.add_development_dependency("rspec")
   gem.add_development_dependency("appraisal")
-  gem.add_development_dependency("rails")
   gem.add_development_dependency("simplecov")
   if defined?(JRUBY_VERSION)
     gem.add_development_dependency("activerecord-jdbcsqlite3-adapter")

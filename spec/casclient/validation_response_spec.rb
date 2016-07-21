@@ -23,18 +23,18 @@ RESPONSE_TEXT
     subject { CASClient::ValidationResponse.new response_text, :encode_extra_attributes_as => :raw }
 
     it "sets text attributes to their string value" do
-      subject.extra_attributes["name"].should == "Jimmy Bob"
+      expect(subject.extra_attributes["name"]).to eq("Jimmy Bob")
     end
 
     it "preserves whitespace for CDATA" do
-      subject.extra_attributes["status"].should == "stuff\n"
+      expect(subject.extra_attributes["status"]).to eq("stuff\n")
     end
 
     it "passes yaml through as is" do
-      subject.extra_attributes["yaml"].should == "--- true\n"
+      expect(subject.extra_attributes["yaml"]).to eq("--- true\n")
     end
     it "passes json through as is" do
-      subject.extra_attributes["json"].should == "{\"id\":10529}"
+      expect(subject.extra_attributes["json"]).to eq("{\"id\":10529}")
     end
   end
 
@@ -59,12 +59,12 @@ RESPONSE_TEXT
     subject { CASClient::ValidationResponse.new response_text, :encode_extra_attributes_as => :yaml }
 
     it "sets text attributes to their string value" do
-      subject.extra_attributes["name"].should == "Jimmy Bob"
+      expect(subject.extra_attributes["name"]).to eq("Jimmy Bob")
     end
 
     it "sets the value of boolean attributes to their boolean value" do
-      subject.extra_attributes["falsy"].should == false
-      subject.extra_attributes["truthy"].should == true
+      expect(subject.extra_attributes["falsy"]).to eq(false)
+      expect(subject.extra_attributes["truthy"]).to eq(true)
     end
   end
 
@@ -94,31 +94,31 @@ RESPONSE_TEXT
     subject { CASClient::ValidationResponse.new response_text, :encode_extra_attributes_as => :json }
 
     it "sets the value of non-CDATA escaped empty attribute to nil" do
-      subject.extra_attributes["mobile_phone"].should be_nil
+      expect(subject.extra_attributes["mobile_phone"]).to be_nil
     end
 
     it "sets the value of CDATA escaped empty attribute to nil" do
-      subject.extra_attributes["global_roles"].should be_nil
+      expect(subject.extra_attributes["global_roles"]).to be_nil
     end
 
     it "sets the value of literal attributes to their value" do
-      subject.extra_attributes["first_name"].should == "Jack"
+      expect(subject.extra_attributes["first_name"]).to eq("Jack")
     end
 
     it "sets the value of JSON attributes containing Arrays to their parsed value" do
-      subject.extra_attributes["foo_data"][0]["id"].should == 10529
+      expect(subject.extra_attributes["foo_data"][0]["id"]).to eq(10529)
     end
 
     it "sets the value of JSON attributes containing Hashes to their parsed value" do
-      subject.extra_attributes["food_data"]["id"].should == 10529
+      expect(subject.extra_attributes["food_data"]["id"]).to eq(10529)
     end
 
     it "sets non-hash attributes as strings" do
-      subject.extra_attributes["last_name"].should be_a_kind_of String
+      expect(subject.extra_attributes["last_name"]).to be_a_kind_of String
     end
 
     it "sets the value of attributes which are not valid JSON but are valid YAML to their literal value" do
-      subject.extra_attributes["allegedly_yaml"].should == '- 10'
+      expect(subject.extra_attributes["allegedly_yaml"]).to eq('- 10')
     end
   end
 
@@ -141,8 +141,8 @@ RESPONSE_TEXT
 
     it "sets attributes for other type of format" do
       expected = {"username" => "myuser", "name" => 'My User', "email" => 'myuser@mail.example.com'}
-      subject.user.should == 'myuser'
-      subject.extra_attributes.should == expected
+      expect(subject.user).to eq('myuser')
+      expect(subject.extra_attributes).to eq(expected)
     end
   end
 end
