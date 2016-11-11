@@ -1,6 +1,6 @@
 # https://github.com/rubycas/rubycas-client/pull/69/files
 require 'active_record/session_store'
- 
+
  # wrapper around ActionDispatch::Session::ActiveRecordStore
  # as ActiveRecord::SessionStore.session_class doesn't exist in rails4
 module ActiveRecord
@@ -8,7 +8,7 @@ module ActiveRecord
     def self.session_class
       ActionDispatch::Session::ActiveRecordStore.session_class
     end
-     
+
     def self.session_class=(klass)
       ActionDispatch::Session::ActiveRecordStore.session_class = klass
     end
@@ -93,8 +93,8 @@ module CASClient
         before_save :save_service_ticket
 
         def save_service_ticket
-          if data[:service_ticket]
-            self.service_ticket = data[:service_ticket]
+          if data['service_ticket']
+            self.service_ticket = data['service_ticket']
           end
         end
       end
