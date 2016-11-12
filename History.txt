@@ -1,5 +1,10 @@
 = RubyCAS-Client Changelog
 
+== Version 2.3.11 :: 2016-11-11
+
+* Bug fixes
+  * Fixed bug where Single Sign Out failed to work because ActiveRecordTicketStore did not save the service ticket on the session record
+  
 == Version 2.3.10.rc1 :: 2013-03-18
 
 * Bug Fixes
@@ -144,9 +149,9 @@ See http://www.opensource.org/licenses/mit-license.php
     URL for the current controller; useful when you want to show a "Login"
     link in a gatewayed page for an unauthenticated user.
   * Added cas_server_is_up? method to the client, as requested in issue #5.
-  * Extra user attributes are now automatically unserialized if the incoming data 
+  * Extra user attributes are now automatically unserialized if the incoming data
     is in YAML format.
-    
+
 * Changes to existing functionality:
   * The 'service' parameter in the logout method has been renamed to
     'destination' to better match the behaviour of other CAS clients. So for
@@ -154,19 +159,19 @@ See http://www.opensource.org/licenses/mit-license.php
     now return "https://cas.example?destination=https%3A%2F%2Ffoo.example"
     instead of the old "https://cas.example?service=https%3A%2F%2Ffoo.example".
     RubyCAS-Server has been modified to deal with this as of version 0.6.0.
-  * We now accept HTTP responses from the CAS server with status code 422 since 
-    RubyCAS-Server 0.7.0+ generates these in response to requests that are 
-    processable but contain invalid CAS data (for example an invalid service 
+  * We now accept HTTP responses from the CAS server with status code 422 since
+    RubyCAS-Server 0.7.0+ generates these in response to requests that are
+    processable but contain invalid CAS data (for example an invalid service
     ticket).
   * Some behind-the-scenes changes to the way previous authentication info is
-    reused by the Rails filter in subsequent requests (see the note below 
-    in the 2.0.1 release). From the user's and integrator's point of view 
+    reused by the Rails filter in subsequent requests (see the note below
+    in the 2.0.1 release). From the user's and integrator's point of view
     there shouldn't be any obvious difference from 2.0.1.
-  * Redirection loop interception: The client now logs a warning message when it 
-    believes that it is stuck in a redirection loop with the CAS server. If more 
+  * Redirection loop interception: The client now logs a warning message when it
+    believes that it is stuck in a redirection loop with the CAS server. If more
     than three of these redirects occur within one second, the client will
     redirect back to the login page with renew=1, forcing the user to try
-    authenticating again. 
+    authenticating again.
   * Somewhat better handling and logging of errors resulting from CAS server
     connection/response problems.
 
@@ -176,21 +181,21 @@ See http://www.opensource.org/licenses/mit-license.php
     stripped from the logout url.
   * The client will no longer attempt to retrieve a PGT for an IOU that had
     already been previously retrieved. [yipdw1]
-    
+
 * Misc:
-  * Added complete CAS client integration examples for Rails and Merb 
+  * Added complete CAS client integration examples for Rails and Merb
     applications under /examples.
 
 == Version 2.0.1 :: 2008-02-27
 
-* The Rails filter no longer by default redirects to the CAS server on 
+* The Rails filter no longer by default redirects to the CAS server on
   every request. This restores the behaviour of RubyCAS-Client 1.x.
   In other words, if a session[:cas_user] value exists, the filter
   will assume that the user is authenticated without going through the
-  CAS server. This behaviour can be disabled (so that a CAS re-check is 
-  done on every request) by setting the 'authenticate_on_every_request' 
-  option to true. See the "Re-authenticating on every request" section 
-  in the README.txt for details. 
+  CAS server. This behaviour can be disabled (so that a CAS re-check is
+  done on every request) by setting the 'authenticate_on_every_request'
+  option to true. See the "Re-authenticating on every request" section
+  in the README.txt for details.
 
 == Version 2.0.0 :: 2008-02-14
 
@@ -217,19 +222,19 @@ See http://www.opensource.org/licenses/mit-license.php
   using the gateway option easier.
 * The CAS::Filter methods are now properly documented.
 * Simplified guess_service produces better URLs when redirecting to the CAS
-  server for authentication and the service URL is not explicitly specified. 
+  server for authentication and the service URL is not explicitly specified.
   [delagoya]
 * The correct method for overriding the service URL for the client is now
   properly documented. You should use service_url=, as server_name= no longer
   works and instead generates a warning message.
 * logout_url() now takes an additional 'service' parameter. If specified, this
-  URL will be passed on to the CAS server as part of the logout URL. 
+  URL will be passed on to the CAS server as part of the logout URL.
 
 == Version 1.0.0 :: 2007-07-26
 
 * RubyCAS-Client has matured to the point where it is probably safe to
   take it out of beta and release version 1.0.
-* Non-SSL CAS URLs will now work. This may be useful for demo purposes, 
+* Non-SSL CAS URLs will now work. This may be useful for demo purposes,
   but certainly shouldn't be used in production. The client automatically
   disables SSL if the CAS URL starts with http (rather than https). [rubywmq]
 
@@ -273,8 +278,8 @@ See http://www.opensource.org/licenses/mit-license.php
 * If your service URI has a 'ticket' parameter, it will now be automatically
   removed when passing the service as a parameter in any CAS request. This is
   done because at least some CAS servers will happily accept a service URI with
-  a 'ticket' parameter, which will result in a URI with  multiple 'ticket' 
-  parameters once you are redirected back to CAS (and that in turn can result 
+  a 'ticket' parameter, which will result in a URI with  multiple 'ticket'
+  parameters once you are redirected back to CAS (and that in turn can result
   in an endless redirection loop).
 * Logging has been greatly improved, which should make debugging your CAS
   installation much easier. Look for the logs under log/cas_client_RAILS_ENV.log
@@ -282,7 +287,7 @@ See http://www.opensource.org/licenses/mit-license.php
   use a custom logger. You can change this by explicitly setting your own
   logger in your environment.rb, or by modifying the plugin's init.rb.
 * CasProxyCallbackController no longer checks to make sure that the incoming
-  request is secure. The check is impossible since the secure header is not 
+  request is secure. The check is impossible since the secure header is not
   passed on by at least some reverse proxies (like Pound), and if you are using
   the callback controller then you are almost certainly also using a reverse
   proxy.
