@@ -1,5 +1,11 @@
 = RubyCAS-Client Changelog
 
+== Version 2.3.12 :: 2017-06-19
+
+* Bug fixes
+  * Fixed issue with configuring :raw mode when parsing extra attributes
+  * Fixed issue with error handling when parsing extra attributes as YAML
+
 == Version 2.3.11 :: 2016-11-11
 
 * Bug fixes
