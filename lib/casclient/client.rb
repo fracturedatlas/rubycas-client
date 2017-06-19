@@ -18,8 +18,9 @@ module CASClient
       raise ArgumentError, "Missing :cas_base_url parameter!" unless conf[:cas_base_url]
 
       if conf.has_key?("encode_extra_attributes_as")
-        unless (conf[:encode_extra_attributes_as] == :json || conf[:encode_extra_attributes_as] == :yaml)
-          raise ArgumentError, "Unkown Value for :encode_extra_attributes_as parameter! Allowed options are json or yaml - #{conf[:encode_extra_attributes_as]}"
+
+        unless [:json, :yaml, :raw].include?(conf[:encode_extra_attributes_as])
+          raise ArgumentError, "Unknown Value for :encode_extra_attributes_as parameter! Allowed options are :json, :yaml, or :raw but received - #{conf[:encode_extra_attributes_as]}"
         end
       end
 
