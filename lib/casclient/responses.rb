@@ -94,8 +94,8 @@ module CASClient
        elsif !encode_extra_attributes_as
          begin
            YAML.load(value)
-         rescue ArgumentError => e
-           raise ArgumentError, "Error parsing extra attribute with value #{value} as YAML: #{e}"
+         rescue Psych::Exception => e
+           value
          end
        else
          if encode_extra_attributes_as == :json
